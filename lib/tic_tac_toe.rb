@@ -2,9 +2,6 @@ require 'pry'
 
 class TicTacToe
 
-  def initialize
-    @board = [" "," "," "," "," "," "," "," "," "]
-  end
   WIN_COMBINATIONS = [
     [0,1,2],
     [3,4,5],
@@ -13,7 +10,12 @@ class TicTacToe
     [1,4,7],
     [2,5,8],
     [0,4,8],
-    [2,4,6]]
+    [2,4,6]
+  ]
+
+  def initialize
+    @board = [" "," "," "," "," "," "," "," "," "]
+  end
 
   def display_board
     puts " #{@board[0]} | #{@board[1]} | #{@board[2]} "
@@ -24,72 +26,73 @@ class TicTacToe
   end
 
   def input_to_index(input)
-    index = input.to_i-1
+    index = input.to_i
+    index -= 1
+    index
   end
 
-  def move(index,token = "X")
-    @board[index] = token
+  def move(index, player_token)
+    @board[index] = player_token
   end
 
   def position_taken?(index)
-    @board[index] == " " ? false : true
+    @board[index] != " "? true : false
   end
 
   def valid_move?(index)
-    index >= 0 && index <= 8 && position_taken?(index) == false
+    (!position_taken?(index) && index >= 0 && index <= 8)? true : false
   end
 
   def turn_count
-    @board.select {|position| position != " "}.count
+    @board.select{|position| position != " "}.count
   end
 
   def current_player
-    turn_count.even? ? "X" : "O"
+    turn_count.even?? "X" : "O"
   end
 
   def turn
-    puts "Please select a space between 1 and 9:"
+    puts "Player #{current_player}, please pick a position to move (1-9):"
     input = gets.strip
     index = input_to_index(input)
-    if valid_move?(index) && !position_taken?(index)
-      token = current_player
-      move(index,token)
+    if valid_move?(index)
+      move(index, current_player)
       display_board
     else
       puts "Invalid move."
-      display_board
       turn
     end
   end
 
   def won?
-    WIN_COMBINATIONS.detect do |win_combo|
-      @board[win_combo[0]] == @board[win_combo[1]] && @board[win_combo[0]] == @board[win_combo[2]] && @board[win_combo[0]] != " "
-    end
+    WIN_COMBINATIONS.detect{|combo| (@board[combo[0]] == @board[combo[1]] && @board[combo[0]] == @board[combo[2]]) && @board[combo[0]] != " "}
   end
 
   def full?
-    turn_count == 9 ? true : false
+    turn_count == 9
   end
 
   def draw?
-    full? and !won? ? true : false
+    full? && !won?
   end
 
   def over?
-    draw? || won? ? true : false
+    draw? || won?
   end
 
   def winner
-    won? ? @board[won?[0]] : nil
+    @board[won?[0]] if won?
   end
 
   def play
-    until over?
+    if !over?
       turn
+      play
+    elsif won?
+      puts "Congratulations #{winner}!"
+    elsif draw?
+      puts "Cat's Game!"
     end
-    won? ? (puts "Congratulations #{winner}!") : false
-    draw? ? (puts "Cat's Game!") : false
   end
 
 end

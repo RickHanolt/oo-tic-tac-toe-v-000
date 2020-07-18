@@ -115,3 +115,9 @@ class TicTacToe
   end
 
 end
+
+require 'pry'
+require_relative '../lib/tic_tac_toe.rb'
+
+tic_tac_toe =TicTacToe.new
+tic_tac_toe.play
